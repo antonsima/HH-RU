@@ -1,3 +1,7 @@
+def sort_vacancies(vacancies):
+    return sorted(vacancies, reverse=True)
+
+
 def user_interaction():
     search_query = input("Введите поисковый запрос: ")
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
