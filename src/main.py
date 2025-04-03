@@ -18,8 +18,8 @@
 # print(response.json()) # печать ответа в виде json-объекта того, что нам вернул внешний сервис
 # # Вывод:
 #
-# with open('../json/information.json', 'w', encoding='utf-8') as file:
-#     json.dump(response.json(), file, ensure_ascii=False)
+# with open(f'{JSON_DIR}/information.json', 'w', encoding='utf-8') as file:
+#     json.dump(vac, file, ensure_ascii=False)
 from src.utils import user_interaction
 
 if __name__ == '__main__':
