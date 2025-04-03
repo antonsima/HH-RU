@@ -1,4 +1,9 @@
+import json
 from abc import abstractmethod, ABC
+
+import requests
+
+from config import JSON_DIR
 
 
 class BaseHeadHunterAPI(ABC):
@@ -24,10 +29,16 @@ class HeadHunterAPI(BaseHeadHunterAPI):
 
     def get_vacancies(self, keyword):
         self.params['text'] = keyword
-        while self.params.get('page') != 20:
+        while self.params.get('page') != 5:
             response = requests.get(self.url, headers=self.headers, params=self.params)
             vacancies = response.json()['items']
             self.vacancies.extend(vacancies)
             self.params['page'] += 1
 
         return self.vacancies
+
+hh_api = HeadHunterAPI()
+vac = hh_api.get_vacancies('Python')
+
+with open(f'{JSON_DIR}/information.json', 'w', encoding='utf-8') as file:
+    json.dump(vac, file, ensure_ascii=False)
