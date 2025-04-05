@@ -3,6 +3,8 @@ class Vacancy:
     Класс для работы создания вакансий
     """
 
+    __slots__ = ('name', 'url', 'salary_from', 'salary_to', 'currency', 'requirements', 'city')
+
     vacancies_obj_list: list['Vacancy'] = []
 
     def __init__(self, name: str, url: str, salary_from: int, salary_to: int, currency: str,
@@ -111,6 +113,9 @@ class Vacancy:
 
     @classmethod
     def remove_vacancy(cls, vacancy: 'Vacancy') -> None:
+        """
+        Принимается экземпляр класса Vacancy, который необходимо удалить из списка
+        """
 
         tmp_url_list = []
 

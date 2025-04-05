@@ -13,8 +13,12 @@ class BaseFileWorker(ABC):
     def write_vacancies_to_file(self, vacancies: list['Vacancy']) -> None:
         pass
 
+
+class BaseJSONSaver(ABC):
+    """ Абстрактный класс для FileWorker """
+
     @abstractmethod
-    def read_vacancies_from_file(self) -> str:
+    def write_vacancies_to_file(self, vacancies: list[dict]) -> None:
         pass
 
 
@@ -39,13 +43,15 @@ class FileWorker(BaseFileWorker):
 
         tmp_vacancies_info_list = []
 
-        for vac in vacancies:
-            tmp_vacancies_info_list.append(str(vac))
+        with open(self.__file_path, 'r', encoding='utf-8') as file:
+            for vac in vacancies:
+                if str(vac) not in file:
+                    tmp_vacancies_info_list.append(str(vac))
 
         tmp_vacancies_info_str = '\n'.join(tmp_vacancies_info_list)
 
-        with open(self.__file_path, 'w', encoding='utf-8') as file:
-            file.write(tmp_vacancies_info_str)
+        with open(self.__file_path, 'a', encoding='utf-8') as file:
+            file.write(tmp_vacancies_info_str + '\n\n')
 
     def read_vacancies_from_file(self) -> str:
         """
@@ -57,8 +63,24 @@ class FileWorker(BaseFileWorker):
 
         return vacancies_info
 
+    def add_vacancies(self, vacancies_info: str) -> None:
+        """
+        Добавление информации о вакансиях
+        """
 
-class JSONSaver:
+        with open(self.__file_path, 'a', encoding='utf-8') as file:
+            file.write(vacancies_info + '\n')
+
+    def remove_all_vacancies(self) -> None:
+        """
+        Очистить файл с информацией о вакансиях
+        """
+
+        with open(self.__file_path, 'w', encoding='utf-8') as file:
+            file.write('')
+
+
+class JSONSaver(BaseJSONSaver):
     def __init__(self, filename: str = 'vacancies.json'):
         self.__file_path = os.path.join(JSON_DIR, filename)
         self.__check_and_create()
