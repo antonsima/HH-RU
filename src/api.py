@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 import requests
 
@@ -6,9 +6,8 @@ import requests
 class BaseHeadHunterAPI(ABC):
     """ Абстрактный класс для HeadHunterAPI """
 
-    @property
     @abstractmethod
-    def get_vacancies(self, *args, **kwargs):
+    def get_vacancies(self, keyword: str) -> list[dict]:
         pass
 
 
@@ -18,13 +17,13 @@ class HeadHunterAPI(BaseHeadHunterAPI):
     Класс Parser является родительским классом, который вам необходимо реализовать
     """
 
-    def __init__(self):
-        self.url = 'https://api.hh.ru/vacancies'
-        self.headers = {'User-Agent': 'HH-User-Agent'}
-        self.params = {'text': '', 'page': 0, 'per_page': 100}
-        self.vacancies = []
+    def __init__(self) -> None:
+        self.url: str = 'https://api.hh.ru/vacancies'
+        self.headers: dict = {'User-Agent': 'HH-User-Agent'}
+        self.params: dict = {'text': '', 'page': 0, 'per_page': 100}
+        self.vacancies: list[dict] = []
 
-    def get_vacancies(self, keyword):
+    def get_vacancies(self, keyword: str) -> list[dict]:
         """
         Получение списка вакансий в виде словарей
         """

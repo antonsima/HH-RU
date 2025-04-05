@@ -1,8 +1,9 @@
 from src.api import HeadHunterAPI
+from src.fileworker import FileWorker, JSONSaver
 from src.vacancy import Vacancy
 
 
-def sort_vacancies(vacancies):
+def sort_vacancies(vacancies: list['Vacancy']) -> list['Vacancy']:
     """
     Сортировка по убыванию зарплаты от
     """
@@ -10,7 +11,7 @@ def sort_vacancies(vacancies):
     return sorted(vacancies, reverse=True)
 
 
-def filter_vacancies_requirements(vacancies_list, filter_words):
+def filter_vacancies_requirements(vacancies_list: list['Vacancy'], filter_words: list[str]) -> list['Vacancy']:
     """
     Фильтрация по требованиям к навыкам
     """
@@ -25,7 +26,7 @@ def filter_vacancies_requirements(vacancies_list, filter_words):
     return filtered_vacancies
 
 
-def filter_vacancies_city(vacancies_list, filter_city):
+def filter_vacancies_city(vacancies_list: list['Vacancy'], filter_city: str) -> list['Vacancy']:
     """
     Фильтрация по городу
     """
@@ -39,10 +40,10 @@ def filter_vacancies_city(vacancies_list, filter_city):
     return filtered_vacancies
 
 
-def filter_vacancies_salary(vacancies_list, filter_salary):
+def filter_vacancies_salary(vacancies_list: list['Vacancy'], filter_salary: int) -> list['Vacancy']:
     """
-        Фильтрация по зарплате от
-        """
+    Фильтрация по зарплате от
+    """
 
     filtered_vacancies = []
 
@@ -53,7 +54,7 @@ def filter_vacancies_salary(vacancies_list, filter_salary):
     return filtered_vacancies
 
 
-def print_vacancies(top_vacancies):
+def print_vacancies(top_vacancies: list['Vacancy']) -> None:
     """
     принт вакансий одной за другой в консоль
     """
@@ -62,12 +63,12 @@ def print_vacancies(top_vacancies):
         print(vac)
 
 
-def user_interaction():
+def user_interaction() -> None:
     search_query = input("Введите поисковый запрос: ")
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
     filter_words = input("Введите ключевые слова для фильтрации вакансий: ").split()
     filter_city = input("Введите город для фильтрации вакансий: ")
-    salary_range = input("Введите зарплату от: ")
+    salary_range = int(input("Введите зарплату от: "))
 
     hh_api = HeadHunterAPI()
     hh_vacancies = hh_api.get_vacancies(search_query)
@@ -76,8 +77,14 @@ def user_interaction():
 
     filtered_vacancies_by_words = filter_vacancies_requirements(sorted_vacancies_list, filter_words)
     filtered_vacancies_by_city = filter_vacancies_city(filtered_vacancies_by_words, filter_city)
-    filter_vacancies_salary = filter_vacancies_salary(filtered_vacancies_by_city, salary_range)
+    filtered_vacancies_by_salary = filter_vacancies_salary(filtered_vacancies_by_city, salary_range)
 
-    top_vacancies = filter_vacancies_salary[0:top_n]
+    top_vacancies = filtered_vacancies_by_salary[0:top_n]
+
+    txt_saver = FileWorker('vacancies.txt')
+    txt_saver.write_vacancies_to_file(top_vacancies)
+
+    json_saver = JSONSaver('vacancies.json')
+    json_saver.write_vacancies_to_file(hh_vacancies)
 
     print_vacancies(top_vacancies)
