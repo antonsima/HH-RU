@@ -1,9 +1,6 @@
-import json
 from abc import abstractmethod, ABC
 
 import requests
-
-from config import JSON_DIR
 
 
 class BaseHeadHunterAPI(ABC):
@@ -28,6 +25,10 @@ class HeadHunterAPI(BaseHeadHunterAPI):
         self.vacancies = []
 
     def get_vacancies(self, keyword):
+        """
+        Получение списка вакансий в виде словарей
+        """
+
         self.params['text'] = keyword
         while self.params.get('page') != 20:
             response = requests.get(self.url, headers=self.headers, params=self.params)

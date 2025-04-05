@@ -1,60 +1,135 @@
 class Vacancy:
+    """
+    Класс для работы создания вакансий
+    """
+
     vacancies_obj_list = []
 
-    def __init__(self, name, url, salary, requirements, address):
+    def __init__(self, name, url, salary_from, salary_to, currency, requirements, city):
         self.name = name
         self.url = url
-        self.__validate_salary(salary)
-        self.__validate_requirements(requirements)
-        self.__validate_city(address)
+        self.salary_from = salary_from
+        self.salary_to = salary_to
+        self.currency = currency
+        self.requirements = requirements
+        self.city = city
 
-    def __validate_salary(self, salary):
-        if salary:
-            self.currency = salary['currency']
-            if salary['from']:
-                self.salary_from = salary['from']
-            else:
-                self.salary_from = 0
+    @classmethod
+    def __validate_salary_and_currency(cls, vac_info):
+        """
+        Валидация зарплаты от, зарплаты до и валют
+        """
 
-            if salary['to']:
-                self.salary_to = salary['to']
-            else:
-                self.salary_to = 0
-        else:
-            self.currency = ''
-            self.salary_from = 0
-            self.salary_to = 0
+        try:
+            salary_from = vac_info['salary']['from']
 
-    def __validate_requirements(self, requirements):
-        if requirements:
-            self.requirements = requirements
-        else:
-            self.requirements = 'Требования не указаны'
+            if not salary_from:
+                salary_from = 0
+        except (AttributeError, TypeError):
+            salary_from = 0
+        try:
+            salary_to = vac_info['salary']['to']
 
-    def __validate_city(self, address):
-        if address:
-            if address['city']:
-                self.city = address['city']
-            else:
-                self.city = 'Город не указан'
-        else:
-            self.city = 'Город не указан'
+            if not salary_to:
+                salary_to = 0
+        except (AttributeError, TypeError):
+            salary_to = 0
+        try:
+            currency = f' {vac_info['salary']['currency']}'
+
+            if not currency:
+                currency = ''
+        except (AttributeError, TypeError):
+            currency = ''
+
+        return salary_from, salary_to, currency
+
+    @classmethod
+    def __validate_requirements(cls, vac_info):
+        """
+        Валидация требований
+        """
+
+        try:
+            requirements = f' {vac_info['snippet']['requirement']}'
+
+            if not requirements:
+                requirements = 'Требования не указаны'
+        except (AttributeError, TypeError):
+            requirements = 'Требования не указаны'
+
+        return requirements
+
+    @classmethod
+    def __validate_city(self, vac_info):
+        """
+        Валидация города
+        """
+
+        try:
+            city = vac_info['address']['city']
+
+            if not city:
+                city = 'Город не указан'
+        except (AttributeError, TypeError):
+            city = 'Город не указан'
+
+        return city
 
     @classmethod
     def cast_to_object_list(cls, vacancies_data):
+        """
+        Создание списка экземпляров класса Vacancy из списка словарей с вакансиями
+        """
+
         for vac_info in vacancies_data:
             name = vac_info['name']
             url = vac_info['alternate_url']
-            salary = vac_info['salary']
-            requirements = vac_info['snippet']['requirement']
-            address = vac_info['address']
+            salary_from, salary_to, currency = cls.__validate_salary_and_currency(vac_info)
+            requirements = cls.__validate_requirements(vac_info)
+            city = cls.__validate_city(vac_info)
 
-            Vacancy.vacancies_obj_list.append(Vacancy(name, url, salary, requirements, address))
+            Vacancy.vacancies_obj_list.append(Vacancy(name, url, salary_from, salary_to, currency, requirements, city))
 
         return Vacancy.vacancies_obj_list
 
+    @classmethod
+    def add_vacancies(cls, vacancies):
+        """
+        Добавление экземпляров класса Vacancy из списка словарей вакансий
+        """
+
+        for vac_info in vacancies:
+            name = vac_info['name']
+            url = vac_info['alternate_url']
+            salary_from, salary_to, currency = cls.__validate_salary_and_currency(vac_info)
+            requirements = cls.__validate_requirements(vac_info)
+            city = cls.__validate_city(vac_info)
+
+            cls.vacancies_obj_list.append(Vacancy(name, url, salary_from, salary_to, currency, requirements, city))
+
+    @classmethod
+    def remove_vacancy(cls, vacancy):
+
+        tmp_url_list = []
+
+        for vac in cls.vacancies_obj_list:
+            tmp_url_list.append(vac.url)
+
+        if vacancy.url in tmp_url_list:
+            index = tmp_url_list.index(vacancy.url)
+
+            cls.vacancies_obj_list.pop(index)
+
     def __str__(self):
-        return f'{self.name}, зарплата {self.salary_from} - {self.salary_to} {self.currency}, {self.city}, {self.url}'
+        if self.salary_from and self.salary_to:
+            return f'{self.name}, зарплата {self.salary_from}-{self.salary_to}{self.currency}, {self.city}, {self.url}'
+        elif self.salary_from and not self.salary_to:
+            return f'{self.name}, зарплата от {self.salary_from}{self.currency}, {self.city}, {self.url}'
+        elif not self.salary_from and self.salary_to:
+            return f'{self.name}, зарплата до {self.salary_to}{self.currency}, {self.city}, {self.url}'
+        else:
+            return f'{self.name}, зарплата не указана, {self.city}, {self.url}'
 
     def __lt__(self, other):
         if self.salary_from < other.salary_from:
