@@ -10,6 +10,7 @@ python = "^3.12"
 requests = "^2.32.3"
 lint = "^1.2.1"
 types-requests = "^2.32.0.20250328"
+pytest = "^8.3.5"
 
 [tool.poetry.group.lint.dependencies]
 flake8 = "^7.1.1"

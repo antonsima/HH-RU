@@ -61,3 +61,9 @@ class HeadHunterAPI(BaseHeadHunterAPI):
                 return self.__vacancies
 
         return self.__vacancies
+
+    @property
+    def vacancies(self) -> list[dict]:
+        """ Геттер для вакансий """
+
+        return self.__vacancies

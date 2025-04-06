@@ -11,73 +11,85 @@ class Vacancy:
                  requirements: str, city: str) -> None:
         self.name = name
         self.url = url
-        self.salary_from = salary_from
-        self.salary_to = salary_to
-        self.currency = currency
-        self.requirements = requirements
-        self.city = city
+        self.salary_from, self.salary_to, self.currency = self.__validate_salary_and_currency(salary_from, salary_to, currency)
+        self.requirements = self.__validate_requirements(requirements)
+        self.city = self.__validate_city(city)
+
+        Vacancy.vacancies_obj_list.append(self)
 
     @classmethod
-    def __validate_salary_and_currency(cls, vac_info: dict) -> tuple[int, int, str]:
+    def __validate_salary_and_currency(cls, salary_from: int, salary_to: int, currency: str) -> tuple[int, int, str]:
         """
         Валидация зарплаты от, зарплаты до и валют
         """
 
-        try:
-            salary_from = vac_info['salary']['from']
-
-            if not salary_from:
-                salary_from = 0
-        except (AttributeError, TypeError):
+        if not salary_from:
             salary_from = 0
-        try:
-            salary_to = vac_info['salary']['to']
 
-            if not salary_to:
-                salary_to = 0
-        except (AttributeError, TypeError):
+        if not salary_to:
             salary_to = 0
-        try:
-            currency = f' {vac_info['salary']['currency']}'
 
-            if not currency:
-                currency = ''
-        except (AttributeError, TypeError):
+        if not currency:
             currency = ''
+        else:
+            currency = f' {currency}'
 
         return salary_from, salary_to, currency
 
     @classmethod
-    def __validate_requirements(cls, vac_info: dict) -> str:
+    def __validate_requirements(cls, requirements: str) -> str:
         """
         Валидация требований
         """
 
-        try:
-            requirements = f' {vac_info['snippet']['requirement']}'
-
-            if not requirements:
-                requirements = 'Требования не указаны'
-        except (AttributeError, TypeError):
+        if not requirements:
             requirements = 'Требования не указаны'
 
         return requirements
 
     @classmethod
-    def __validate_city(self, vac_info: dict) -> str:
+    def __validate_city(self, city: str) -> str:
         """
         Валидация города
         """
 
-        try:
-            city = str(vac_info['address']['city'])
-
-            if not city:
-                city = 'Город не указан'
-        except (AttributeError, TypeError):
+        if not city:
             city = 'Город не указан'
 
         return city
+
+    @classmethod
+    def __attributes_from_dict(cls, vac_info: dict) -> tuple[int | None, int | None, str | None, str | None, str | None]:
+        """
+        Получение зарплаты, валюты, требований и города из словаря
+        """
+
+        try:
+            salary_from = vac_info['salary']['from']
+        except (KeyError, TypeError):
+            salary_from = None
+
+        try:
+            salary_to = vac_info['salary']['to']
+        except (KeyError, TypeError):
+            salary_to = None
+
+        try:
+            currency = vac_info['salary']['currency']
+        except (KeyError, TypeError):
+            currency = None
+
+        try:
+            requirements = vac_info['snippet']['requirement']
+        except (KeyError, TypeError):
+            requirements = None
+
+        try:
+            city = vac_info['address']['city']
+        except (KeyError, TypeError):
+            city = None
+
+        return salary_from, salary_to, currency, requirements, city
 
     @classmethod
     def cast_to_object_list(cls, vacancies_data: list[dict]) -> list['Vacancy']:
@@ -88,11 +100,9 @@ class Vacancy:
         for vac_info in vacancies_data:
             name = vac_info['name']
             url = vac_info['alternate_url']
-            salary_from, salary_to, currency = cls.__validate_salary_and_currency(vac_info)
-            requirements = cls.__validate_requirements(vac_info)
-            city = cls.__validate_city(vac_info)
+            salary_from, salary_to, currency, requirements, city = cls.__attributes_from_dict(vac_info)
 
-            Vacancy.vacancies_obj_list.append(Vacancy(name, url, salary_from, salary_to, currency, requirements, city))
+            Vacancy(name, url, salary_from, salary_to, currency, requirements, city)
 
         return Vacancy.vacancies_obj_list
 
@@ -105,11 +115,9 @@ class Vacancy:
         for vac_info in vacancies:
             name = vac_info['name']
             url = vac_info['alternate_url']
-            salary_from, salary_to, currency = cls.__validate_salary_and_currency(vac_info)
-            requirements = cls.__validate_requirements(vac_info)
-            city = cls.__validate_city(vac_info)
+            salary_from, salary_to, currency, requirements, city = cls.__attributes_from_dict(vac_info)
 
-            cls.vacancies_obj_list.append(Vacancy(name, url, salary_from, salary_to, currency, requirements, city))
+            Vacancy(name, url, salary_from, salary_to, currency, requirements, city)
 
     @classmethod
     def remove_vacancy(cls, vacancy: 'Vacancy') -> None:
@@ -130,16 +138,16 @@ class Vacancy:
     def __str__(self) -> str:
         if self.salary_from and self.salary_to:
             return (f'{self.name}, зарплата {self.salary_from}-{self.salary_to}{self.currency}, '
-                    f'{self.city}, {self.url}'
+                    f'{self.city}, {self.url}\n'
                     f'{self.requirements}')
         elif self.salary_from and not self.salary_to:
-            return f'{self.name}, зарплата от {self.salary_from}{self.currency}, {self.city}, {self.url}' \
+            return f'{self.name}, зарплата от {self.salary_from}{self.currency}, {self.city}, {self.url}\n' \
                    f'{self.requirements}'
         elif not self.salary_from and self.salary_to:
-            return f'{self.name}, зарплата до {self.salary_to}{self.currency}, {self.city}, {self.url}' \
+            return f'{self.name}, зарплата до {self.salary_to}{self.currency}, {self.city}, {self.url}\n' \
                    f'{self.requirements}'
         else:
-            return f'{self.name}, зарплата не указана, {self.city}, {self.url}'\
+            return f'{self.name}, зарплата не указана, {self.city}, {self.url}\n'\
                    f'{self.requirements}'
 
     def __lt__(self, other: 'Vacancy') -> bool:

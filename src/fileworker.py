@@ -92,7 +92,7 @@ class JSONSaver(BaseJSONSaver):
 
         if not os.path.exists(self.__file_path):
             with open(self.__file_path, 'w', encoding='utf-8') as file:
-                file.write('[]]')
+                file.write('[]')
 
     def write_vacancies_to_file(self, vacancies: list[dict]) -> None:
         """
