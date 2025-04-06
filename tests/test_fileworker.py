@@ -5,7 +5,7 @@ import unittest
 from config import TESTS_DIR
 from src.fileworker import FileWorker, JSONSaver
 from src.vacancy import Vacancy
-from tests.variables_for_tests import test_vacancies, test_content
+from tests.variables_for_tests import test_content, test_vacancies
 
 
 class TestFileWriting(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestFileWriting(unittest.TestCase):
                 os.unlink(tmp_filename)
 
         try:
-            txt_saver = FileWorker(tmp_filename)
+            FileWorker(tmp_filename)
 
             with open(tmp_filename, 'r', encoding='utf-8') as file:
                 content = file.read()
@@ -78,7 +78,7 @@ class TestJSONWriting(unittest.TestCase):
     def test_write_json(self):
         Vacancy.vacancies_obj_list.clear()
 
-        vacancies = Vacancy.cast_to_object_list(test_vacancies)
+        Vacancy.cast_to_object_list(test_vacancies)
         with open(os.path.join(TESTS_DIR, 'json_test.json'), 'r', encoding='utf-8') as file:
             test_json = file.read()
 
@@ -97,7 +97,7 @@ class TestJSONWriting(unittest.TestCase):
                 os.unlink(tmp_filename)
 
         try:
-            json_saver = JSONSaver(tmp_filename)
+            JSONSaver(tmp_filename)
 
             with open(tmp_filename, 'r', encoding='utf-8') as file:
                 content = file.read()
@@ -106,4 +106,3 @@ class TestJSONWriting(unittest.TestCase):
             if os.path.exists(tmp_filename):
                 os.unlink(tmp_filename)
                 Vacancy.vacancies_obj_list.clear()
-

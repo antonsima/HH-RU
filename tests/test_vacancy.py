@@ -15,12 +15,12 @@ def test_vacancy_cast_to_object_list(vacancies_fixture):
 
 def test_vacancy_creation():
     test_vacancy = Vacancy('DevOps инженер',
-            'https://hh.ru/vacancy/119079884',
-            None,
-            None,
-            None,
-            None,
-            None)
+                           'https://hh.ru/vacancy/119079884',
+                           None,
+                           None,
+                           None,
+                           None,
+                           None)
 
     assert test_vacancy.name == 'DevOps инженер'
     assert test_vacancy.url == 'https://hh.ru/vacancy/119079884'
@@ -36,8 +36,8 @@ def test_vacancy_creation():
 def test_vacancy_comparison(vacancies_fixture):
     vacancies_obj_list = Vacancy.cast_to_object_list(vacancies_fixture)
 
-    assert (vacancies_obj_list[0] > vacancies_obj_list[1]) == True
-    assert (vacancies_obj_list[0] < vacancies_obj_list[1]) == False
+    assert (vacancies_obj_list[0] > vacancies_obj_list[1]) is True
+    assert (vacancies_obj_list[0] < vacancies_obj_list[1]) is False
 
     Vacancy.vacancies_obj_list.clear()
 
@@ -45,11 +45,11 @@ def test_vacancy_comparison(vacancies_fixture):
 def test_add_vacancies(vacancies_fixture):
     vacancies_obj_list = Vacancy.cast_to_object_list(vacancies_fixture)
 
-    assert len(Vacancy.vacancies_obj_list) == 77
+    assert len(vacancies_obj_list) == 77
 
     Vacancy.add_vacancies(vacancies_fixture)
 
-    assert len(Vacancy.vacancies_obj_list) == 154
+    assert len(vacancies_obj_list) == 154
 
     Vacancy.vacancies_obj_list.clear()
 
@@ -63,6 +63,6 @@ def test_remove_vacancies(vacancies_fixture):
     Vacancy.remove_vacancy(vacancy_1)
     Vacancy.remove_vacancy(vacancy_2)
 
-    assert len(Vacancy.vacancies_obj_list) == 75
+    assert len(vacancies_obj_list) == 75
 
     Vacancy.vacancies_obj_list.clear()

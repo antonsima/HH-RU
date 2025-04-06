@@ -1,4 +1,4 @@
-from src.utils import sort_vacancies, filter_vacancies_requirements, filter_vacancies_city, filter_vacancies_salary
+from src.utils import filter_vacancies_city, filter_vacancies_requirements, filter_vacancies_salary, sort_vacancies
 from src.vacancy import Vacancy
 
 

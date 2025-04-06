@@ -7,18 +7,20 @@ class Vacancy:
 
     vacancies_obj_list: list['Vacancy'] = []
 
-    def __init__(self, name: str, url: str, salary_from: int, salary_to: int, currency: str,
-                 requirements: str, city: str) -> None:
+    def __init__(self, name: str | None, url: str | None, salary_from: int | None, salary_to: int | None,
+                 currency: str | None, requirements: str | None, city: str | None) -> None:
         self.name = name
         self.url = url
-        self.salary_from, self.salary_to, self.currency = self.__validate_salary_and_currency(salary_from, salary_to, currency)
+        self.salary_from, self.salary_to, self.currency = (
+            self.__validate_salary_and_currency(salary_from, salary_to, currency))
         self.requirements = self.__validate_requirements(requirements)
         self.city = self.__validate_city(city)
 
         Vacancy.vacancies_obj_list.append(self)
 
     @classmethod
-    def __validate_salary_and_currency(cls, salary_from: int, salary_to: int, currency: str) -> tuple[int, int, str]:
+    def __validate_salary_and_currency(cls, salary_from: int | None, salary_to: int | None,
+                                       currency: str | None) -> tuple[int, int, str]:
         """
         Валидация зарплаты от, зарплаты до и валют
         """
@@ -37,7 +39,7 @@ class Vacancy:
         return salary_from, salary_to, currency
 
     @classmethod
-    def __validate_requirements(cls, requirements: str) -> str:
+    def __validate_requirements(cls, requirements: str | None) -> str:
         """
         Валидация требований
         """
@@ -48,7 +50,7 @@ class Vacancy:
         return requirements
 
     @classmethod
-    def __validate_city(self, city: str) -> str:
+    def __validate_city(self, city: str | None) -> str:
         """
         Валидация города
         """
@@ -59,7 +61,8 @@ class Vacancy:
         return city
 
     @classmethod
-    def __attributes_from_dict(cls, vac_info: dict) -> tuple[int | None, int | None, str | None, str | None, str | None]:
+    def __attributes_from_dict(cls, vac_info: dict) -> tuple[int | None, int | None,
+                                                             str | None, str | None, str | None]:
         """
         Получение зарплаты, валюты, требований и города из словаря
         """

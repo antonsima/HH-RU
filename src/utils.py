@@ -1,11 +1,6 @@
-import json
-import os
-
-from config import JSON_DIR
 from src.api import HeadHunterAPI
 from src.fileworker import FileWorker, JSONSaver
 from src.vacancy import Vacancy
-from tests.variables_for_tests import test_vacancies
 
 
 def sort_vacancies(vacancies: list['Vacancy']) -> list['Vacancy']:
@@ -93,7 +88,3 @@ def user_interaction() -> None:
     json_saver.write_vacancies_to_file(hh_vacancies)
 
     print_vacancies(top_vacancies)
-
-vacancies_list = Vacancy.cast_to_object_list(test_vacancies)
-
-print_vacancies(vacancies_list)
