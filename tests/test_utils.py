@@ -3,6 +3,8 @@ from src.vacancy import Vacancy
 
 
 def test_sort_vacancies(vacancies_fixture):
+    Vacancy.vacancies_obj_list.clear()
+
     vacancies_list = Vacancy.cast_to_object_list(vacancies_fixture)
     sorted_vacancies_list = sort_vacancies(vacancies_list)
 
@@ -22,6 +24,8 @@ def test_sort_vacancies(vacancies_fixture):
 
 
 def test_filter_vacancies(vacancies_fixture):
+    Vacancy.vacancies_obj_list.clear()
+
     vacancies_list = Vacancy.cast_to_object_list(vacancies_fixture)
     sorted_vacancies_list = sort_vacancies(vacancies_list)
 

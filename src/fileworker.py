@@ -21,6 +21,14 @@ class BaseJSONSaver(ABC):
     def write_vacancies_to_file(self, vacancies: list[dict]) -> None:
         pass
 
+    @abstractmethod
+    def get_vacancies_from_file(self) -> list[dict]:
+        pass
+
+    @abstractmethod
+    def delete_vacancies_from_file(self) -> None:
+        pass
+
 
 class FileWorker(BaseFileWorker):
     def __init__(self, filename: str = 'vacancies.txt') -> None:
@@ -94,10 +102,38 @@ class JSONSaver(BaseJSONSaver):
             with open(self.__file_path, 'w', encoding='utf-8') as file:
                 file.write('[]')
 
+        if os.path.exists(self.__file_path) and os.path.getsize(self.__file_path) == 0:
+            with open(self.__file_path, 'w', encoding='utf-8') as file:
+                file.write('[]')
+
     def write_vacancies_to_file(self, vacancies: list[dict]) -> None:
         """
         Принимает список словарей вакансий, записывает их в файл в формате JSON
         """
 
+        vacancies_from_json = self.get_vacancies_from_file()
+        tmp_vacancies = []
+        for vacancy in vacancies:
+            if vacancy not in vacancies_from_json:
+                tmp_vacancies.append(vacancy)
+        vacancies_from_json.extend(tmp_vacancies)
         with open(self.__file_path, 'w', encoding='utf-8') as file:
-            json.dump(vacancies, file, ensure_ascii=False)
+            json.dump(vacancies_from_json, file, ensure_ascii=False)
+
+    def get_vacancies_from_file(self) -> list[dict]:
+        """
+        Возвращает список словарей с вакансиями
+        """
+
+        with open(self.__file_path, 'r') as file:
+            vacancies = json.load(file)
+
+        return vacancies
+
+    def delete_vacancies_from_file(self) -> None:
+        """
+        Очищает файл JSON
+        """
+
+        with open(self.__file_path, 'w', encoding='utf-8') as file:
+            file.write('[]')

@@ -1,8 +1,9 @@
+import json
 import os
 import tempfile
 import unittest
 
-from config import TESTS_DIR
+from config import JSON_DIR, TESTS_DIR
 from src.fileworker import FileWorker, JSONSaver
 from src.vacancy import Vacancy
 from tests.variables_for_tests import test_content, test_vacancies
@@ -106,3 +107,20 @@ class TestJSONWriting(unittest.TestCase):
             if os.path.exists(tmp_filename):
                 os.unlink(tmp_filename)
                 Vacancy.vacancies_obj_list.clear()
+
+
+def test_delete_vacancies_from_json():
+    json_saver = JSONSaver('deleting_vacancies.json')
+
+    with open(os.path.join(JSON_DIR, 'deleting_vacancies.json'), 'w', encoding='utf-8') as file:
+        json.dump(test_vacancies, file, ensure_ascii=False)
+
+    json_saver.delete_vacancies_from_file()
+
+    with open(os.path.join(JSON_DIR, 'deleting_vacancies.json'), 'r', encoding='utf-8') as file:
+        content = file.read()
+
+    assert content == '[]'
+
+    if os.path.exists(os.path.join(JSON_DIR, 'deleting_vacancies.json')):
+        os.unlink(os.path.join(JSON_DIR, 'deleting_vacancies.json'))
